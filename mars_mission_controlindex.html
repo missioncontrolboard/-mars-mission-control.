@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mars Mission Control</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#070b10;color:#eef2f4;font-family:Arial,Helvetica,sans-serif}
+.board{max-width:1000px;margin:25px auto;padding:20px;background:linear-gradient(145deg,#0c131b,#141f29);border:1px solid #40505c;border-radius:14px}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #46545e;padding-bottom:15px}
+.eyebrow{font-size:11px;letter-spacing:2px;color:#ffad6b;font-weight:bold}
+h1{margin:5px 0 0;font-size:30px}
+.status{border:1px solid #50606b;padding:8px;border-radius:5px;font-size:11px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#69c56b;margin-right:5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.photo{border:1px solid #40505c;border-radius:10px;overflow:hidden;background:#05080b}
+.photo img{width:100%;height:350px;object-fit:cover;display:block}
+.caption{padding:9px;font-size:10px;letter-spacing:1px;color:#b9c3c9}
+.panel{background:#121b24;border:1px solid #40505c;border-radius:10px;padding:18px}
+.code{font-size:10px;color:#ffad6b;letter-spacing:2px}
+h2{margin:7px 0 12px;font-size:26px}
+.fact{font-size:16px;line-height:1.6}
+.readouts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.readout{background:#19252f;border:1px solid #354650;border-radius:5px;padding:10px}
+.readout small{display:block;color:#9ba8b0;font-size:9px;text-transform:uppercase}
+.readout b{display:block;margin-top:4px;font-size:14px}
+.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+button{min-height:45px;background:#17222c;color:#e7ecef;border:1px solid #43535e;border-radius:6px;font-weight:bold;font-size:11px;cursor:pointer}
+button:hover,button:focus{border-color:#ff9b55;outline:2px solid #713b20}
+button.active{background:#60331f;border-color:#ff9b55}
+footer{display:flex;justify-content:space-between;border-top:1px solid #40505c;margin-top:15px;padding-top:11px;color:#9ba8b0;font-size:10px}
+@media(max-width:700px){
+ .grid{grid-template-columns:1fr}
+ .photo img{height:270px}
+ .controls{grid-template-columns:repeat(2,1fr)}
+ header{align-items:flex-start;gap:10px}
+ h1{font-size:23px}
+}
+</style>
+</head>
+<body>
+<div class="board">
+<header>
+<div><div class="eyebrow">PLANETARY OPERATIONS // MARS</div><h1>MISSION CONTROL BOARD</h1></div>
+<div class="status"><span class="dot"></span>DATA ONLINE</div>
+</header>
+
+<div class="grid">
+<div class="photo">
+<img id="marsImage" src="https://science.nasa.gov/wp-content/uploads/2024/03/mars.png" alt="Mars">
+<div class="caption" id="caption">NASA IMAGE // MARS FROM SPACE</div>
+</div>
+
+<section class="panel">
+<div class="code" id="code">SYS-01</div>
+<h2 id="title">COMPOSITION</h2>
+<div class="fact" id="fact">Mars is a rocky terrestrial planet. Its crust contains minerals including <b>iron, magnesium, aluminium, calcium and potassium</b>. Iron in the rocks and dust oxidizes, giving Mars its reddish colour.</div>
+<div class="readouts">
+<div class="readout"><small>Planet type</small><b id="r1">Rocky / terrestrial</b></div>
+<div class="readout"><small>Core</small><b id="r2">Iron, nickel & sulfur</b></div>
+</div>
+</section>
+</div>
+
+<div class="controls">
+<button class="active" data-key="composition">COMPOSITION</button>
+<button data-key="structure">STRUCTURE</button>
+<button data-key="atmosphere">ATMOSPHERE</button>
+<button data-key="temperature">TEMPERATURE</button>
+<button data-key="moons">MOONS</button>
+<button data-key="gravity">GRAVITY</button>
+<button data-key="features">FEATURES</button>
+<button data-key="overview">OVERVIEW</button>
+</div>
+
+<footer>
+<span>MISSION: <b>RED PLANET SURVEY</b></span>
+<span>DAY: <b>24h 39m</b></span>
+<span>DATA: <b>NASA</b></span>
+</footer>
+</div>
+
+<script>
+const data={
+composition:{
+code:"SYS-01",title:"COMPOSITION",
+fact:"Mars is a rocky terrestrial planet. Its crust contains minerals including <b>iron, magnesium, aluminium, calcium and potassium</b>. Iron in the rocks and dust oxidizes, giving Mars its reddish colour.",
+r1:"Rocky / terrestrial",r2:"Iron, nickel & sulfur",
+img:"https://science.nasa.gov/wp-content/uploads/2024/03/mars.png",caption:"NASA IMAGE // MARS FROM SPACE"
+},
+structure:{
+code:"SYS-02",title:"STRUCTURE",
+fact:"Mars has a <b>dense core</b> surrounded by a rocky mantle and a solid crust. Its interior is divided into crust, mantle and core.",
+r1:"Crust + mantle",r2:"Iron-rich core",
+img:"https://science.nasa.gov/wp-content/uploads/2024/03/mars.png",caption:"PLANETARY STRUCTURE // MARS"
+},
+atmosphere:{
+code:"ENV-03",title:"ATMOSPHERE",
+fact:"Mars has an extremely thin atmosphere made mostly of <b>carbon dioxide</b>, with nitrogen and argon. Its surface pressure is less than 1/100 of Earth's average.",
+r1:"~95% CO₂",r2:"Very thin",
+img:"https://science.nasa.gov/wp-content/uploads/2024/03/mars.png",caption:"ATMOSPHERE // MARS"
+},
+temperature:{
+code:"ENV-04",title:"TEMPERATURE",
+fact:"Mars is a cold desert world. Temperatures can range from about <b>-153°C to 20°C</b>, depending on location and conditions. The average is roughly -60°C.",
+r1:"Average: ~-60°C",r2:"-153°C to 20°C",
+img:"https://science.nasa.gov/wp-content/uploads/2024/03/mars.png",caption:"CLIMATE SYSTEM // MARS"
+},
+moons:{
+code:"ORB-05",title:"MOONS",
+fact:"Mars has <b>two small moons: Phobos and Deimos</b>. Both are irregularly shaped because they are too small for their gravity to pull them into spheres.",
+r1:"2 moons",r2:"Phobos + Deimos",
+img:"https://science.nasa.gov/wp-content/uploads/2024/03/mars.png",caption:"ORBITAL SYSTEM // MARS"
+},
+gravity:{
+code:"PHY-06",title:"GRAVITY",
+fact:"Surface gravity on Mars is about <b>3.7 m/s²</b>, or about <b>38% of Earth's gravity</b>. Objects therefore weigh less on Mars.",
+r1:"3.7 m/s²",r2:"~38% of Earth",
+img:"https://science.nasa.gov/wp-content/uploads/2024/03/mars.png",caption:"GRAVITY SYSTEM // MARS"
+},
+features:{
+code:"GEO-07",title:"INTERESTING FEATURES",
+fact:"Mars has the solar system's largest volcano, <b>Olympus Mons</b>, and a huge canyon system called <b>Valles Marineris</b>. It also has polar ice caps, craters, ancient river valleys and dust storms.",
+r1:"Olympus Mons",r2:"Valles Marineris",
+img:"https://science.nasa.gov/wp-content/uploads/2024/03/mars.png",caption:"SURFACE FEATURES // MARS"
+},
+overview:{
+code:"CMD-08",title:"MARS OVERVIEW",
+fact:"Mars is the <b>fourth planet from the Sun</b>. It is about half Earth's diameter, has seasons, a day of about 24 hours 39 minutes, and a year lasting 687 Earth days.",
+r1:"4th planet",r2:"687 Earth days",
+img:"https://science.nasa.gov/wp-content/uploads/2024/03/mars.png",caption:"MISSION OVERVIEW // RED PLANET"
+}
+};
+
+const root=document.querySelector(".board");
+const buttons=document.querySelectorAll("button");
+buttons.forEach(button=>{
+ button.addEventListener("click",()=>{
+  const d=data[button.dataset.key];
+  buttons.forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+  document.querySelector("#code").textContent=d.code;
+  document.querySelector("#title").textContent=d.title;
+  document.querySelector("#fact").innerHTML=d.fact;
+  document.querySelector("#r1").textContent=d.r1;
+  document.querySelector("#r2").textContent=d.r2;
+  document.querySelector("#marsImage").src=d.img;
+  document.querySelector("#caption").textContent=d.caption;
+ });
+});
+</script>
+</body>
+</html>
