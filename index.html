@@ -5,201 +5,439 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mars Mission Control</title>
 <style>
+:root{
+  --bg-deep:#05080b;
+  --bg-panel:#0c131b;
+  --bg-panel2:#141f29;
+  --line:#3a4a55;
+  --line-bright:#5a6e7a;
+  --text:#e8eef1;
+  --text-dim:#8fa0a9;
+  --accent:#ff9b4a;
+  --accent-dim:#7a4a24;
+  --good:#5fd97a;
+  --mono:'Courier New',ui-monospace,monospace;
+  --sans:Arial,Helvetica,sans-serif;
+}
 *{box-sizing:border-box}
-body{margin:0;background:#070b10;color:#eef2f4;font-family:Arial,Helvetica,sans-serif}
-.board{max-width:1000px;margin:25px auto;padding:20px;background:linear-gradient(145deg,#0c131b,#141f29);border:1px solid #40505c;border-radius:14px}
-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #46545e;padding-bottom:15px}
-.eyebrow{font-size:11px;letter-spacing:2px;color:#ffad6b;font-weight:bold}
-h1{margin:5px 0 0;font-size:30px}
-.status{border:1px solid #50606b;padding:8px;border-radius:5px;font-size:11px}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#69c56b;margin-right:5px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
-.photo{border:1px solid #40505c;border-radius:10px;overflow:hidden;background:#05080b}
-.photo img{width:100%;height:350px;object-fit:cover;display:block}
-.caption{padding:9px;font-size:10px;letter-spacing:1px;color:#b9c3c9}
-.panel{background:#121b24;border:1px solid #40505c;border-radius:10px;padding:18px}
-.code{font-size:10px;color:#ffad6b;letter-spacing:2px}
-h2{margin:7px 0 12px;font-size:26px}
-.fact{font-size:16px;line-height:1.6}
-.readouts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
-.readout{background:#19252f;border:1px solid #354650;border-radius:5px;padding:10px}
-.readout small{display:block;color:#9ba8b0;font-size:9px;text-transform:uppercase}
-.readout b{display:block;margin-top:4px;font-size:14px}
-.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
-button{min-height:45px;background:#17222c;color:#e7ecef;border:1px solid #43535e;border-radius:6px;font-weight:bold;font-size:11px;cursor:pointer}
-button:hover,button:focus{border-color:#ff9b55;outline:2px solid #713b20}
-button.active{background:#60331f;border-color:#ff9b55}
-footer{display:flex;justify-content:space-between;border-top:1px solid #40505c;margin-top:15px;padding-top:11px;color:#9ba8b0;font-size:10px}
-@media(max-width:700px){
- .grid{grid-template-columns:1fr}
- .photo img{height:270px}
- .controls{grid-template-columns:repeat(2,1fr)}
- header{align-items:flex-start;gap:10px}
- h1{font-size:23px}
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse at top,#0d1620 0%,var(--bg-deep) 60%);
+  color:var(--text);
+  font-family:var(--sans);
+  padding:18px;
+}
+.board{
+  max-width:1040px;
+  margin:0 auto;
+  background:linear-gradient(160deg,var(--bg-panel),var(--bg-panel2));
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:22px;
+  box-shadow:0 0 0 1px #000, 0 20px 60px -20px #000;
+}
+
+/* header */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:16px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:16px;
+  flex-wrap:wrap;
+}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:3px;
+  color:var(--accent);
+}
+h1{
+  margin:6px 0 0;
+  font-size:28px;
+  letter-spacing:0.5px;
+}
+.status-block{text-align:right}
+.status{
+  font-family:var(--mono);
+  border:1px solid var(--line-bright);
+  padding:7px 10px;
+  border-radius:4px;
+  font-size:11px;
+  letter-spacing:1px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--good);
+  box-shadow:0 0 6px var(--good);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.clock{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--text-dim);
+  margin-top:6px;
+}
+
+/* main grid */
+.grid{
+  display:grid;
+  grid-template-columns:1.1fr 1fr;
+  gap:18px;
+  margin-top:18px;
+}
+.photo{
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  background:#000;
+  position:relative;
+}
+.photo img{
+  width:100%;
+  height:360px;
+  object-fit:cover;
+  display:block;
+  filter:saturate(1.05) contrast(1.05);
+  transition:opacity .25s ease;
+}
+.scanline{
+  position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.02) 0px,
+    rgba(255,255,255,0.02) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events:none;
+}
+.caption{
+  padding:8px 10px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:1.5px;
+  color:var(--text-dim);
+  border-top:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+}
+
+.panel{
+  background:#101923;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+}
+.code{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--accent);
+  letter-spacing:2px;
+}
+h2{
+  margin:6px 0 12px;
+  font-size:24px;
+  letter-spacing:0.5px;
+}
+.fact{
+  font-size:15px;
+  line-height:1.65;
+  color:var(--text);
+}
+.fact b{color:var(--accent);font-weight:600}
+
+.readouts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:auto;
+  padding-top:18px;
+}
+.readout{
+  background:#0b1319;
+  border:1px solid var(--line);
+  border-radius:5px;
+  padding:10px 12px;
+}
+.readout small{
+  display:block;
+  font-family:var(--mono);
+  color:var(--text-dim);
+  font-size:9px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+}
+.readout b{
+  display:block;
+  margin-top:5px;
+  font-size:14px;
+  font-weight:600;
+}
+
+/* controls */
+.controls{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:18px;
+}
+button{
+  min-height:46px;
+  background:#131d26;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:6px;
+  font-weight:bold;
+  font-size:11px;
+  letter-spacing:1px;
+  cursor:pointer;
+  font-family:var(--mono);
+  transition:background .15s ease,border-color .15s ease;
+}
+button:hover{border-color:var(--line-bright)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.active{
+  background:var(--accent-dim);
+  border-color:var(--accent);
+  color:#fff;
+}
+
+footer{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px;
+  border-top:1px solid var(--line);
+  margin-top:18px;
+  padding-top:12px;
+  color:var(--text-dim);
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:1px;
+}
+footer b{color:var(--text);font-weight:600}
+
+@media(max-width:720px){
+  .grid{grid-template-columns:1fr}
+  .photo img{height:260px}
+  .controls{grid-template-columns:repeat(2,1fr)}
+  header{align-items:flex-start}
+  .status-block{text-align:left}
+  h1{font-size:22px}
 }
 </style>
 </head>
 <body>
 <div class="board">
-<header>
-<div><div class="eyebrow">PLANETARY OPERATIONS // MARS</div><h1>MISSION CONTROL BOARD</h1></div>
-<div class="status"><span class="dot"></span>DATA ONLINE</div>
-</header>
 
-<div class="grid">
-<div class="photo">
-<img id="marsImage" src="https://science.nasa.gov/wp-content/uploads/2024/03/mars.png" alt="Mars">
-<div class="caption" id="caption">NASA IMAGE // MARS FROM SPACE</div>
-</div>
+  <header>
+    <div>
+      <div class="eyebrow">PLANETARY OPERATIONS // MARS</div>
+      <h1>MISSION CONTROL BOARD</h1>
+    </div>
+    <div class="status-block">
+      <div class="status"><span class="dot"></span>TELEMETRY NOMINAL</div>
+      <div class="clock" id="clock">-- : -- : -- UTC</div>
+    </div>
+  </header>
 
-<section class="panel">
-<div class="code" id="code">SYS-01</div>
-<h2 id="title">COMPOSITION</h2>
-<div class="fact" id="fact">Mars is a rocky terrestrial planet. Its crust contains minerals including <b>iron, magnesium, aluminium, calcium and potassium</b>. Iron in the rocks and dust oxidizes, giving Mars its reddish colour.</div>
-<div class="readouts">
-<div class="readout">
-  <small id="label1">Planet type</small>
-  <b id="r1">Rocky / terrestrial</b>
-<div class="readout">
-  <small id="label2">Core</small>
-  <b id="r2">Iron, nickel & sulfur</b>
-</div>
-</section>
-</div>
+  <div class="grid">
+    <div class="photo">
+      <img id="marsImage" src="https://science.nasa.gov/wp-content/uploads/2024/03/mars.png" alt="Mars">
+      <div class="scanline"></div>
+      <div class="caption">
+        <span id="caption">NASA IMAGE // MARS FROM SPACE</span>
+        <span id="imgCredit">CREDIT: NASA</span>
+      </div>
+    </div>
 
-<div class="controls">
-<button class="active" data-key="composition">COMPOSITION</button>
-<button data-key="structure">STRUCTURE</button>
-<button data-key="atmosphere">ATMOSPHERE</button>
-<button data-key="temperature">TEMPERATURE</button>
-<button data-key="moons">MOONS</button>
-<button data-key="gravity">GRAVITY</button>
-<button data-key="features">FEATURES</button>
-<button data-key="overview">OVERVIEW</button>
-</div>
+    <section class="panel">
+      <div class="code" id="code">SYS-01</div>
+      <h2 id="title">COMPOSITION</h2>
+      <div class="fact" id="fact">Mars is a rocky terrestrial planet. Its crust contains minerals including <b>iron, magnesium, aluminium, calcium and potassium</b>. Iron in the rocks and dust oxidizes, giving Mars its reddish colour.</div>
 
-<footer>
-<span>MISSION: <b>RED PLANET SURVEY</b></span>
-<span>DAY: <b>24h 39m</b></span>
-<span>DATA: <b>NASA</b></span>
-</footer>
+      <div class="readouts">
+        <div class="readout">
+          <small id="label1">Planet type</small>
+          <b id="r1">Rocky / terrestrial</b>
+        </div>
+        <div class="readout">
+          <small id="label2">Core</small>
+          <b id="r2">Iron, nickel &amp; sulfur</b>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="controls">
+    <button class="active" data-key="composition">COMPOSITION</button>
+    <button data-key="structure">STRUCTURE</button>
+    <button data-key="atmosphere">ATMOSPHERE</button>
+    <button data-key="temperature">TEMPERATURE</button>
+    <button data-key="moons">MOONS</button>
+    <button data-key="gravity">GRAVITY</button>
+    <button data-key="features">FEATURES</button>
+    <button data-key="overview">OVERVIEW</button>
+  </div>
+
+  <footer>
+    <span>MISSION: <b>RED PLANET SURVEY</b></span>
+    <span>SOL: <b id="sol">1</b></span>
+    <span>DATA SOURCE: <b>NASA</b></span>
+  </footer>
 </div>
 
 <script>
+const MARS_IMG = "https://science.nasa.gov/wp-content/uploads/2024/03/mars.png";
+const OLYMPUS_IMG = "https://svs.gsfc.nasa.gov/vis/a000000/a002800/a002883/olympus_mons_false.jpg";
+const MOONS_IMG = "https://images-assets.nasa.gov/image/PIA17305/PIA17305~orig.jpg";
+
 const data={
   composition:{
     code:"SYS-01",
     title:"COMPOSITION",
-    label1:"Composition",
+    label1:"Planet type",
     label2:"Core",
-    fact:"Mars is a rocky terrestrial planet. Its crust contains minerals including <b>iron, magnesium and silicon</b>.",
+    fact:"Mars is a rocky terrestrial planet. Its crust contains minerals including <b>iron, magnesium, aluminium, calcium and potassium</b>. Iron in the rocks and dust oxidizes, giving Mars its reddish colour.",
     r1:"Rocky / terrestrial",
     r2:"Iron, nickel & sulfur",
-    img:"Mars.JPG",
-    caption:"NASA IMAGE // MARS"
+    img:MARS_IMG,
+    caption:"NASA IMAGE // MARS FROM SPACE",
+    credit:"CREDIT: NASA"
   },
-
   structure:{
     code:"SYS-02",
     title:"STRUCTURE",
     label1:"Layers",
     label2:"Core",
-    fact:"Mars has a <b>dense core</b> surrounded by a rocky mantle and a solid crust.",
+    fact:"Mars has a <b>dense metallic core</b> surrounded by a rocky mantle and a thin, solid crust — thinner than Earth's relative to its size.",
     r1:"Crust + mantle",
     r2:"Iron-rich core",
-    img:"Marsstructure.JPG",
-    caption:"MARS INTERNAL STRUCTURE"
+    img:MARS_IMG,
+    caption:"NASA IMAGE // MARS SURFACE",
+    credit:"CREDIT: NASA"
   },
-
   atmosphere:{
     code:"ENV-03",
     title:"ATMOSPHERE",
     label1:"Composition",
-    label2:"Size",
-    fact:"Mars has an extremely thin atmosphere made mostly of <b>carbon dioxide</b>, with nitrogen and argon also present.",
+    label2:"Surface pressure",
+    fact:"Mars has an extremely thin atmosphere made mostly of <b>carbon dioxide (~95%)</b>, with nitrogen and argon also present. It's too thin to support liquid water on the surface today.",
     r1:"~95% CO₂",
-    r2:"Very thin",
-    img:"marssurface.jpg",
-    caption:"MARS SURFACE // ATMOSPHERE"
+    r2:"~0.6% of Earth's",
+    img:MARS_IMG,
+    caption:"NASA IMAGE // MARS ATMOSPHERE",
+    credit:"CREDIT: NASA"
   },
-
   temperature:{
     code:"ENV-04",
     title:"TEMPERATURE",
     label1:"Average",
     label2:"Range",
-    fact:"Mars is a cold desert world. Temperatures can range from about <b>-153°C to 20°C</b>, depending on location and conditions.",
+    fact:"Mars is a cold desert world. Surface temperatures can range from about <b>-153°C to 20°C</b>, depending on location, season and time of day.",
     r1:"Average: ~-60°C",
     r2:"-153°C to 20°C",
-    img:"Mars.JPG",
-    caption:"MARS // TEMPERATURE DATA"
+    img:MARS_IMG,
+    caption:"NASA IMAGE // MARS SURFACE",
+    credit:"CREDIT: NASA"
   },
-
   moons:{
     code:"ORB-05",
     title:"MOONS",
-    label1:"Amount",
+    label1:"Count",
     label2:"Names",
-    fact:"Mars has <b>two small moons: Phobos and Deimos</b>. Both are irregularly shaped because of their unusual origins.",
+    fact:"Mars has <b>two small moons: Phobos and Deimos</b>. Both are irregularly shaped, likely captured asteroids, and orbit close to the planet.",
     r1:"2 moons",
     r2:"Phobos + Deimos",
-    img:"marsmoons.jpg",
-    caption:"MARS // PHOBOS & DEIMOS"
+    img:MOONS_IMG,
+    caption:"NASA IMAGE // PHOBOS & DEIMOS (PIA17305)",
+    credit:"CREDIT: NASA/JPL-Caltech"
   },
-
   gravity:{
     code:"PHY-06",
     title:"GRAVITY",
-    label1:"Force",
+    label1:"Surface gravity",
     label2:"Compared to Earth",
-    fact:"Surface gravity on Mars is about <b>3.7 m/s²</b>, or about <b>38% of Earth's gravity</b>.",
+    fact:"Surface gravity on Mars is about <b>3.7 m/s²</b>, roughly <b>38% of Earth's</b> — a 100 kg astronaut would weigh about 38 kg there.",
     r1:"3.7 m/s²",
     r2:"~38% of Earth",
-    img:"Marsgravity.jpg",
-    caption:"MARS // SURFACE GRAVITY"
+    img:MARS_IMG,
+    caption:"NASA IMAGE // MARS SURFACE",
+    credit:"CREDIT: NASA"
   },
-
   features:{
     code:"GEO-07",
     title:"FEATURES",
     label1:"Feature 1",
     label2:"Feature 2",
-    fact:"Mars has the solar system's largest volcano, <b>Olympus Mons</b>, and a huge canyon system called <b>Valles Marineris</b>.",
+    fact:"Mars hosts the solar system's largest known volcano, <b>Olympus Mons</b> (~22 km high), and a vast canyon system called <b>Valles Marineris</b>.",
     r1:"Olympus Mons",
     r2:"Valles Marineris",
-    img:"MountOlympusMons.JPG",
-    caption:"MARS // OLYMPUS MONS"
+    img:OLYMPUS_IMG,
+    caption:"NASA IMAGE // OLYMPUS MONS (MOLA TOPOGRAPHY)",
+    credit:"CREDIT: NASA/GSFC"
   },
-
   overview:{
     code:"CMD-08",
     title:"OVERVIEW",
-    label1:"Planet Number",
-    label2:"Days in Year",
-    fact:"Mars is the <b>fourth planet from the Sun</b>. It is about half Earth's diameter and has seasons similar to Earth.",
+    label1:"Planet number",
+    label2:"Year length",
+    fact:"Mars is the <b>fourth planet from the Sun</b>. It's about half Earth's diameter, has seasons similar to Earth, and a day just slightly longer than ours.",
     r1:"4th planet",
     r2:"687 Earth days",
-    img:"Mars.JPG",
-    caption:"MARS // MISSION OVERVIEW"
+    img:MARS_IMG,
+    caption:"NASA IMAGE // MISSION OVERVIEW",
+    credit:"CREDIT: NASA"
   }
 };
 
-const root=document.querySelector(".board");
 const buttons=document.querySelectorAll("button");
+const img=document.querySelector("#marsImage");
+
 buttons.forEach(button=>{
- button.addEventListener("click",()=>{
-  const d=data[button.dataset.key];
-  buttons.forEach(b=>b.classList.remove("active"));
-  button.classList.add("active");
-  document.querySelector("#code").textContent=d.code;
-  document.querySelector("#title").textContent=d.title;
-  document.querySelector("#fact").innerHTML=d.fact;
-  document.querySelector("#r1").textContent=d.r1;
-  document.querySelector("#r2").textContent=d.r2;
-  document.querySelector("#marsImage").src=d.img;
-  document.querySelector("#caption").textContent=d.caption;
- });
+  button.addEventListener("click",()=>{
+    const d=data[button.dataset.key];
+    buttons.forEach(b=>b.classList.remove("active"));
+    button.classList.add("active");
+
+    document.querySelector("#code").textContent=d.code;
+    document.querySelector("#title").textContent=d.title;
+    document.querySelector("#fact").innerHTML=d.fact;
+    document.querySelector("#label1").textContent=d.label1;
+    document.querySelector("#label2").textContent=d.label2;
+    document.querySelector("#r1").textContent=d.r1;
+    document.querySelector("#r2").textContent=d.r2;
+    document.querySelector("#caption").textContent=d.caption;
+    document.querySelector("#imgCredit").textContent=d.credit;
+
+    img.style.opacity=0;
+    setTimeout(()=>{ img.src=d.img; img.style.opacity=1; },150);
+  });
 });
+
+// live UTC clock + simple mission-elapsed "sol" counter
+const missionStart=Date.now();
+function tick(){
+  const now=new Date();
+  const hh=String(now.getUTCHours()).padStart(2,"0");
+  const mm=String(now.getUTCMinutes()).padStart(2,"0");
+  const ss=String(now.getUTCSeconds()).padStart(2,"0");
+  document.querySelector("#clock").textContent=`${hh}:${mm}:${ss} UTC`;
+
+  const elapsedDays=Math.floor((Date.now()-missionStart)/1000/60/60/24)+1;
+  document.querySelector("#sol").textContent=elapsedDays;
+}
+tick();
+setInterval(tick,1000);
 </script>
 </body>
 </html>
